@@ -1,7 +1,5 @@
 -- ============================================================
--- CRM-FIN · MySQL Setup Script
--- Ejecutar en MySQL Workbench o desde terminal:
---   mysql -u root -p < setup.sql
+
 -- ============================================================
 
 CREATE DATABASE IF NOT EXISTS crm_fin

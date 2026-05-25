@@ -16,7 +16,6 @@ const pool = mysql.createPool({
   port: process.env.DB_PORT,
 });
 
-// GET
 app.get("/inversionistas", async (req, res) => {
   try {
     const [rows] = await pool.query("SELECT * FROM inversionistas ORDER BY id DESC");
@@ -26,50 +25,35 @@ app.get("/inversionistas", async (req, res) => {
   }
 });
 
-// POST
 app.post("/inversionistas", async (req, res) => {
   try {
-    const {
-      nombres,
-      apellidos,
-      telefono,
-      dni,
-      direccion,
-      garantia,
-      aval,
-      fecha,
-      agencia,
-      canal,
-      estado_civil,
-      monto,
-      estado,
-      registrado_por,
-    } = req.body;
+    const body = req.body;
+
+    const nombres = body.nombres || body.nombre || body.nombre_completo || body.nombreCompleto || "";
+    const apellidos = body.apellidos || "";
+    const telefono = body.telefono || body.numero || "";
+    const dni = body.dni || "";
+    const direccion = body.direccion || "";
+    const garantia = body.garantia || body.modelo || "";
+    const aval = body.aval || "";
+    const fecha = body.fecha || new Date().toISOString().split("T")[0];
+    const agencia = body.agencia || "";
+    const canal = body.canal || "";
+    const estado_civil = body.estado_civil || "";
+    const monto = body.monto || 0;
+    const estado = body.estado || "Nuevo";
+    const registrado_por = body.registrado_por || "calle";
 
     const [result] = await pool.query(
       `INSERT INTO inversionistas
       (nombres, apellidos, telefono, dni, direccion, garantia, aval, fecha, agencia, canal, estado_civil, monto, estado, registrado_por)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [
-        nombres,
-        apellidos,
-        telefono,
-        dni,
-        direccion,
-        garantia,
-        aval,
-        fecha,
-        agencia,
-        canal,
-        estado_civil,
-        monto,
-        estado || "Nuevo",
-        registrado_por || "admin",
-      ]
+      [nombres, apellidos, telefono, dni, direccion, garantia, aval, fecha, agencia, canal, estado_civil, monto, estado, registrado_por]
     );
 
     res.json({ success: true, id: result.insertId });
   } catch (err) {
+    console.error("Error POST /inversionistas:", err.message);
     res.status(500).json({ error: err.message });
   }
 });
