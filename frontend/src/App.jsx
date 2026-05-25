@@ -80,7 +80,7 @@ export default function App() {
     setLoadingData(true);
     try {
       const { data } = await axios.get(`${API}/inversionistas`);
-      setInversionistas(data.data || []);
+      setInversionistas(data || []);
     } catch (err) {
       console.error("Error al obtener inversionistas:", err.message);
       alert("No se pudo conectar al servidor. ¿Está corriendo el backend?");
