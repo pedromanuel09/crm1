@@ -16,15 +16,19 @@ const pool = mysql.createPool({
   port: process.env.DB_PORT,
 });
 
+// GET
 app.get("/inversionistas", async (req, res) => {
   try {
-    const [rows] = await pool.query("SELECT * FROM inversionistas ORDER BY id DESC");
+    const [rows] = await pool.query(
+      "SELECT * FROM inversionistas ORDER BY id DESC"
+    );
     res.json(rows);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
+// POST
 app.post("/inversionistas", async (req, res) => {
   try {
     const body = req.body;
@@ -48,14 +52,95 @@ app.post("/inversionistas", async (req, res) => {
       `INSERT INTO inversionistas
       (nombres, apellidos, telefono, dni, direccion, garantia, aval, fecha, agencia, canal, estado_civil, monto, estado, registrado_por)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [nombres, apellidos, telefono, dni, direccion, garantia, aval, fecha, agencia, canal, estado_civil, monto, estado, registrado_por]
+      [
+        nombres,
+        apellidos,
+        telefono,
+        dni,
+        direccion,
+        garantia,
+        aval,
+        fecha,
+        agencia,
+        canal,
+        estado_civil,
+        monto,
+        estado,
+        registrado_por,
+      ]
     );
 
     res.json({ success: true, id: result.insertId });
   } catch (err) {
-    console.error("Error POST /inversionistas:", err.message);
+    console.error("Error POST:", err.message);
     res.status(500).json({ error: err.message });
   }
+});
+
+// PUT EDITAR
+app.put("/inversionistas/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const body = req.body;
+
+    await pool.query(
+      `UPDATE inversionistas SET
+        nombres = ?,
+        apellidos = ?,
+        telefono = ?,
+        dni = ?,
+        direccion = ?,
+        garantia = ?,
+        aval = ?,
+        fecha = ?,
+        agencia = ?,
+        canal = ?,
+        estado_civil = ?,
+        monto = ?,
+        estado = ?
+      WHERE id = ?`,
+      [
+        body.nombres || body.nombre || "",
+        body.apellidos || "",
+        body.telefono || body.numero || "",
+        body.dni || "",
+        body.direccion || "",
+        body.garantia || body.modelo || "",
+        body.aval || "",
+        body.fecha || new Date().toISOString().split("T")[0],
+        body.agencia || "",
+        body.canal || "",
+        body.estado_civil || "",
+        body.monto || 0,
+        body.estado || "Nuevo",
+        id,
+      ]
+    );
+
+    res.json({ success: true, message: "Actualizado correctamente" });
+  } catch (err) {
+    console.error("Error PUT:", err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// DELETE
+app.delete("/inversionistas/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    await pool.query("DELETE FROM inversionistas WHERE id = ?", [id]);
+
+    res.json({ success: true, message: "Eliminado correctamente" });
+  } catch (err) {
+    console.error("Error DELETE:", err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// TEST
+app.get("/", (req, res) => {
+  res.send("Backend CRM-Fin funcionando ✅");
 });
 
 app.listen(PORT, () => {
