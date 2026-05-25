@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 
 // ─── API Base URL ──────────────────────────────────────────────────────────────
-const API = "http://localhost:3001";
+const API = "https://crm-backend-86xw.onrender.com";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 const getTodayDateString = () => {
